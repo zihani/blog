@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的世界像素时钟</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+    padding: 2rem;
+}
+
+h1 {
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #4cc9f0;
+}
+
+.clock-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.pixel-clock {
+    display: grid;
+    grid-template-columns: repeat(15, 20px);
+    grid-template-rows: repeat(15, 20px);
+    gap: 2px;
+    background-color: #0f3460;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 3px solid #4cc9f0;
+}
+
+.pixel {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.pixel.active {
+    background-color: #4cc9f0;
+    box-shadow: 0 0 10px #4cc9f0;
+}
+
+.pixel.hour {
+    background-color: #f72585;
+    box-shadow: 0 0 10px #f72585;
+}
+
+.pixel.minute {
+    background-color: #4361ee;
+    box-shadow: 0 0 10px #4361ee;
+}
+
+.pixel.second {
+    background-color: #7209b7;
+    box-shadow: 0 0 10px #7209b7;
+}
+
+.pixel.grid {
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.info-panel {
+    background: rgba(255,255,255,0.1);
+    padding: 1.5rem;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.digital-time {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #4cc9f0;
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    background: #4cc9f0;
+    color: white;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 201, 240, 0.3);
+}
+
+button:hover {
+    background: #4361ee;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+</style>
+<body>
+    <div class="container">
+        <h1>像素风格时钟</h1>
+        <div class="clock-container">
+            <div id="clock" class="pixel-clock"></div>
+        </div>
+        <div class="info-panel">
+            <div id="digital-time" class="digital-time"></div>
+            <div class="controls">
+                <button id="toggle-grid">切换网格</button>
+                <button id="change-color">更换颜色</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+<script>
+    class PixelClock {
+    constructor() {
+        this.clockElement = document.getElementById('clock');
+        this.digitalTimeElement = document.getElementById('digital-time');
+        this.showGrid = true;
+        this.currentColorScheme = 0;
+        this.colorSchemes = [
+            { bg: '#0f3460', pixel: '#4cc9f0', hour: '#f72585', minute: '#4361ee', second: '#7209b7' },
+            { bg: '#2d3047', pixel: '#ff9e00', hour: '#ff2e00', minute: '#00b4d8', second: '#7209b7' },
+            { bg: '#1b4332', pixel: '#52b788', hour: '#d8f3dc', minute: '#40916c', second: '#2d6a4f' }
+        ];
+        
+        this.initializeClock();
+        this.setupEventListeners();
+        this.updateClock();
+        setInterval(() => this.updateClock(), 1000);
+    }
+
+    initializeClock() {
+        // 创建15x15的像素网格
+        for (let i = 0; i < 15 * 15; i++) {
+            const pixel = document.createElement('div');
+            pixel.className = 'pixel';
+            if (this.showGrid) {
+                pixel.classList.add('grid');
+            }
+            this.clockElement.appendChild(pixel);
+        }
+    }
+
+    setupEventListeners() {
+        document.getElementById('toggle-grid').addEventListener('click', () => {
+            this.showGrid = !this.showGrid;
+            this.toggleGrid();
+        });
+
+        document.getElementById('change-color').addEventListener('click', () => {
+            this.currentColorScheme = (this.currentColorScheme + 1) % this.colorSchemes.length;
+            this.applyColorScheme();
+        });
+    }
+
+    toggleGrid() {
+        const pixels = document.querySelectorAll('.pixel');
+        pixels.forEach(pixel => {
+            if (this.showGrid) {
+                pixel.classList.add('grid');
+            } else {
+                pixel.classList.remove('grid');
+            }
+        });
+    }
+
+    applyColorScheme() {
+        const scheme = this.colorSchemes[this.currentColorScheme];
+        document.documentElement.style.setProperty('--pixel-color', scheme.pixel);
+        document.documentElement.style.setProperty('--hour-color', scheme.hour);
+        document.documentElement.style.setProperty('--minute-color', scheme.minute);
+        document.documentElement.style.setProperty('--second-color', scheme.second);
+        
+        this.clockElement.style.backgroundColor = scheme.bg;
+        this.clockElement.style.borderColor = scheme.pixel;
+    }
+
+    updateClock() {
+        const now = new Date();
+        const hours = now.getHours() % 12;
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+
+        this.updateDigitalTime(now);
+        this.drawClock(hours, minutes, seconds);
+    }
+
+    updateDigitalTime(now) {
+        const timeString = now.toLocaleTimeString('zh-CN');
+        this.digitalTimeElement.textContent = timeString;
+    }
+
+    drawClock(hours, minutes, seconds) {
+        // 清除所有激活状态
+        const pixels = document.querySelectorAll('.pixel');
+        pixels.forEach(pixel => {
+            pixel.classList.remove('active', 'hour', 'minute', 'second');
+        });
+
+        // 绘制时钟刻度
+        this.drawClockFace();
+
+        // 绘制时针
+        this.drawHand(hours * 5 + Math.floor(minutes / 12), 4, 'hour');
+        // 绘制分针
+        this.drawHand(minutes, 6, 'minute');
+        // 绘制秒针
+        this.drawHand(seconds, 6, 'second');
+    }
+
+    drawClockFace() {
+        const centerX = 7;
+        const centerY = 7;
+        const radius = 6;
+
+        // 绘制时钟刻度
+        for (let i = 0; i < 12; i++) {
+            const angle = (i * 30) * Math.PI / 180;
+            const x = Math.round(centerX + radius * Math.sin(angle));
+            const y = Math.round(centerY - radius * Math.cos(angle));
+            this.setPixel(x, y, 'active');
+        }
+    }
+
+    drawHand(value, maxLength, className) {
+        const centerX = 7;
+        const centerY = 7;
+        const angle = (value * 6 - 90) * Math.PI / 180;
+        const length = className === 'hour' ? 3 : maxLength;
+
+        for (let i = 0; i <= length; i++) {
+            const ratio = i / length;
+            const x = Math.round(centerX + ratio * (maxLength - 1) * Math.cos(angle));
+            const y = Math.round(centerY + ratio * (maxLength - 1) * Math.sin(angle));
+            
+            if (x >= 0 && x < 15 && y >= 0 && y < 15) {
+                const index = y * 15 + x;
+                const pixel = this.clockElement.children[index];
+                pixel.classList.add(className, 'active');
+            }
+        }
+    }
+
+    setPixel(x, y, className) {
+        if (x >= 0 && x < 15 && y >= 0 && y < 15) {
+            const index = y * 15 + x;
+            const pixel = this.clockElement.children[index];
+            pixel.classList.add(className);
+        }
+    }
+}
+
+// 初始化时钟
+document.addEventListener('DOMContentLoaded', () => {
+    new PixelClock();
+});
+</script>

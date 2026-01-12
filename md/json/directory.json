@@ -1,0 +1,31 @@
+[
+    {
+      "name":"vue3",
+      "src":"/cover/vue3.jpeg",
+      "fileName":"vue3.md"
+    },{
+      "name":"nodejs",
+      "src":"/cover/node.png",
+      "fileName":"NodeJS基础.md"
+    },{
+      "name":"pm2",
+      "src":"/cover/pm2.jpeg",
+      "fileName":"node.js 为什么单线程还能处理高并发？.md"
+    },{
+      "name":"js设计模式",
+      "src":"/cover/js设计模式.jpeg",
+      "fileName":"JavaScript 设计模式.md"
+    },{
+      "name":"pinia",
+      "src":"/cover/pinia.jpeg",
+      "fileName":"pinia 安装使用.md"
+    },{
+      "name":"typeScript",
+      "src":"/cover/typeScript.png",
+      "fileName":"在vue3中TypeScript基本语法.md"
+    },{
+      "name":"vite",
+      "src":"/cover/vite.jpg",
+      "fileName":"vite.md"
+    }
+]
