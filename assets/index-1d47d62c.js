@@ -1,0 +1,1 @@
+import{_ as e,f as c,g as o}from"./index-b38b54df.js";const t={},n={style:{"padding-top":"80px",color:"black"}};function r(s,_){return c(),o("div",n," 3d ")}const d=e(t,[["render",r]]);export{d as default};
